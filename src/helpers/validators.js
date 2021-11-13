@@ -52,28 +52,22 @@ export const validateFieldN4 = (obj) => {
 };
 
 // 5. Три фигуры одного любого цвета кроме белого (четыре фигуры одного цвета – это тоже true).
-export const validateFieldN5 = (obj) => {
-	return R.allPass([
-		R.compose(R.gt(2), getLength, R.filter(isRed), R.values),
-		R.compose(R.gt(2), getLength, R.filter(isGreen), R.values),
-		R.compose(R.gt(2), getLength, R.filter(isBlue), R.values),
-		R.compose(R.gt(2), getLength, R.filter(isOrange), R.values),
-	])(obj);
-};
+export const validateFieldN5 = R.anyPass([
+	R.compose(R.lt(2), getLength, R.filter(isRed), R.values),
+	R.compose(R.lt(2), getLength, R.filter(isGreen), R.values),
+	R.compose(R.lt(2), getLength, R.filter(isBlue), R.values),
+	R.compose(R.lt(2), getLength, R.filter(isOrange), R.values),
+]);
 
 // 6. Две зеленые фигуры (одна из них треугольник), еще одна любая красная.
-export const validateFieldN6 = (obj) => {
-	return R.allPass([
-		R.compose(R.gt(0), getLength, R.filter(isRed), R.values),
-		R.compose(R.gt(1), getLength, R.filter(isGreen), R.values),
-		R.compose(isGreen, R.prop('triangle'))
-	])(obj);
-};
+export const validateFieldN6 = R.allPass([
+	R.compose(R.lt(0), getLength, R.filter(isRed), R.values),
+	R.compose(R.lt(1), getLength, R.filter(isGreen), R.values),
+	R.compose(isGreen, R.prop('triangle'))
+]);
 
 // 7. Все фигуры оранжевые.
-export const validateFieldN7 = (obj) => {
-	return R.compose(getLength, R.filter(isOrange), R.values)(obj) === 4;
-};
+export const validateFieldN7 = R.compose(R.equals(4), getLength, R.filter(isOrange), R.values);
 
 // 8. Не красная и не белая звезда.
 export const validateFieldN8 = (obj) => {
