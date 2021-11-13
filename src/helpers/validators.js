@@ -62,7 +62,7 @@ export const validateFieldN5 = R.anyPass([
 // 6. Две зеленые фигуры (одна из них треугольник), еще одна любая красная.
 export const validateFieldN6 = R.allPass([
 	R.compose(R.equals(1), getLength, R.filter(isRed), R.values),
-	R.compose(R.lt(1), getLength, R.filter(isGreen), R.values),
+	R.compose(R.equals(2), getLength, R.filter(isGreen), R.values),
 	R.compose(isGreen, R.prop('triangle'))
 ]);
 
