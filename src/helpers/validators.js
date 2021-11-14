@@ -19,11 +19,10 @@ const isGreen = R.equals('green');
 const isBlue = R.equals('blue');
 const isWhite = R.equals('white');
 const isOrange = R.equals('orange');
-const propsEquals = (prop1, prop2, obj) => {
-	return R.identical(R.prop(prop1, obj), R.prop(prop2, obj));
+const getLength = obj => obj.length;
+const propsEquals = (prop1, prop2) => {
+	return obj => obj[prop1] === obj[prop2];
 }
-
-const getLength = (obj) => obj.length;
 
 // 1. Красная звезда, зеленый квадрат, все остальные белые.
 export const validateFieldN1 = R.allPass([
@@ -70,18 +69,16 @@ export const validateFieldN6 = R.allPass([
 export const validateFieldN7 = R.compose(R.equals(4), getLength, R.filter(isOrange), R.values);
 
 // 8. Не красная и не белая звезда.
-export const validateFieldN8 = R.not(
-	R.anyPass([
-		R.compose(isRed, R.prop('star')),
-		R.compose(isWhite, R.prop('star'))
-	])
-);
+export const validateFieldN8 = R.allPass([
+	R.compose(R.not, isRed, R.prop('star')),
+	R.compose(R.not, isWhite, R.prop('star'))
+]);
 
 // 9. Все фигуры зеленые.
 export const validateFieldN9 = R.compose(R.equals(4), getLength, R.filter(isGreen), R.values);
 
 // 10. Треугольник и квадрат одного цвета (не белого)
 export const validateFieldN10 = R.allPass([
-	propsEquals('square','triangle'),
-	R.compose(R.not(isWhite), R.prop('square'))
+	propsEquals('square', 'triangle'),
+	R.compose(R.not, isWhite, R.prop('square'))
 ]);
