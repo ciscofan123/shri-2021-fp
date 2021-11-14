@@ -23,7 +23,7 @@ const api = new Api();
 const square = number => Math.pow(number, 2);
 
 const isAllowedNumber = R.allPass([
-	R.lt(0),
+	R.compose(R.lt(0), lodash.round, Number),
 	R.compose(R.gt(10), R.length),
 	R.test(/^\d+\.?\d+$/)
 ]);
