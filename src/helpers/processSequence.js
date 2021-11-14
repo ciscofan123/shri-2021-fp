@@ -1,51 +1,69 @@
 /**
  * @file Домашка по FP ч. 2
- * 
+ *
  * Подсказки:
  * Метод get у инстанса Api – каррированый
  * GET / https://animals.tech/{id}
- * 
+ *
  * GET / https://api.tech/numbers/base
  * params:
  * – number [Int] – число
  * – from [Int] – из какой системы счисления
  * – to [Int] – в какую систему счисления
- * 
+ *
  * Иногда промисы от API будут приходить в состояние rejected, (прямо как и API в реальной жизни)
  * Ответ будет приходить в поле {result}
  */
-import Api from '../tools/api';
+import * as R from 'ramda'
+import lodash from 'lodash';
+import Api from '../tools/api.js';
 
 const api = new Api();
 
-/**
- * Я – пример, удали меня
- */
-const wait = time => new Promise(resolve => {
-    setTimeout(resolve, time);
-})
+const square = number => Math.pow(number, 2);
+
+const isAllowedNumber = R.allPass([
+	R.compose(R.gt(10), R.length),
+	R.match(/^\d+\.?\d+$/)
+]);
+
+const prepareToBinaryParams = number => ({number: number, from: 10, to: 2});
+const sendToBinaryRequest = api.get('https://api.tech/numbers/base');
+const toBinary = R.compose(sendToBinaryRequest, prepareToBinaryParams);
+
+const toAnimal = id => api.get('https://animals.tech/' + id, {});
 
 const processSequence = ({value, writeLog, handleSuccess, handleError}) => {
-    /**
-     * Я – пример, удали меня
-     */
-    writeLog(value);
 
-    api.get('https://api.tech/numbers/base', {from: 2, to: 10, number: '01011010101'}).then(({result}) => {
-        writeLog(result);
-    });
+	const handleToBinaryResponse = R.compose(
+		R.andThen(R.compose(handleSuccess, R.tap(writeLog), R.prop('result'))),
+		R.otherwise(handleError),
+		toAnimal,
+		R.tap(writeLog),
+		R.modulo(R.__, 3),
+		R.tap(writeLog),
+		square,
+		R.tap(writeLog),
+		R.length,
+		R.tap(writeLog),
+		R.prop('result')
+	);
 
-    wait(2500).then(() => {
-        writeLog('SecondLog')
-
-        return wait(1500);
-    }).then(() => {
-        writeLog('ThirdLog');
-
-        return wait(400);
-    }).then(() => {
-        handleSuccess('Done');
-    });
+	R.compose(
+		R.ifElse(
+			isAllowedNumber,
+			R.compose(
+				R.andThen(handleToBinaryResponse),
+				R.otherwise(handleError),
+				toBinary,
+				R.tap(writeLog),
+				lodash.round,
+				parseFloat
+			),
+			R.tap(R.compose(handleError, () => 'ValidationError'))
+		),
+		R.tap(writeLog),
+	)(value);
 }
 
 export default processSequence;
