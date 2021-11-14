@@ -24,7 +24,7 @@ const square = number => Math.pow(number, 2);
 
 const isAllowedNumber = R.allPass([
 	R.compose(R.gt(10), R.length),
-	R.match(/^\d+\.?\d+$/)
+	R.test(/^\d+\.?\d+$/)
 ]);
 
 const prepareToBinaryParams = number => ({number: number, from: 10, to: 2});
