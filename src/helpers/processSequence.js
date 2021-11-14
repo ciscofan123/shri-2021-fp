@@ -36,7 +36,7 @@ const toAnimal = id => api.get('https://animals.tech/' + id, {});
 const processSequence = ({value, writeLog, handleSuccess, handleError}) => {
 
 	const handleToBinaryResponse = R.compose(
-		R.andThen(R.compose(handleSuccess, R.tap(writeLog), R.prop('result'))),
+		R.andThen(R.compose(handleSuccess, R.prop('result'))),
 		R.otherwise(handleError),
 		toAnimal,
 		R.tap(writeLog),
